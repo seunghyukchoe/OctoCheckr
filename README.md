@@ -50,7 +50,7 @@ The first-run guide covers image preparation, chart alignment, and export. It is
 
 VERSION is the authoritative app version, currently 0.2.0. See CHANGELOG.md for changes. The build script creates and signs a clean staged app before replacing the generated bundle; deleted resources cannot linger from a previous build. MIT covers original source and documentation; THIRD_PARTY.md records material outside that license.
 
-This is a local pre-release, not a completed public launch. Real editor validation, reference-data permissions, Developer ID signing/notarization, source publication and public documentation hosting remain pending. The public repository has been created at https://github.com/seunghyukchoe/OctoCheckr. Native language-switch and minimum-window interaction checks are recorded locally.
+This is a local pre-release, not a completed public launch. Real editor validation, reference-data permissions, Developer ID signing/notarization, source publication remain pending. Public documentation is available at https://seunghyukchoe.github.io/OctoCheckr/ (English) and https://seunghyukchoe.github.io/OctoCheckr/ko/ (Korean). The public repository has been created at https://github.com/seunghyukchoe/OctoCheckr. Native language-switch and minimum-window interaction checks are recorded locally.
 
 File-refresh and connection-state evidence: `Verification/native-file-refresh.md`. Export revision/source guards are implemented; individual native dialog race tests remain distinct from core tests.
 
