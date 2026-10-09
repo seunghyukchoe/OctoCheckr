@@ -1,0 +1,72 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OctoCheckr 사용 안내</title><meta name="description" content="촬영한 컬러 차트를 측정하고 보정 값을 내보내는 네이티브 macOS 앱입니다."><link rel="stylesheet" href="../style.css"></head><body><a class="skip" href="#main">본문으로 이동</a><header>
+<div><strong>OctoCheckr</strong><nav aria-label="문서 목차"><a href="#workflow">작업 순서</a><a href="#compatibility">호환성</a><a href="#charts">차트 데이터</a><a href="#settings">설정</a><a href="#versions">빌드와 버전</a><a href="../index.html" hreflang="en">English</a></nav>
+</div>
+</header>
+<main id="main">
+<h1>OctoCheckr 사용 안내</h1>
+<p>촬영한 컬러 차트를 측정하고 보정 값을 내보내는 네이티브 macOS 앱입니다.</p>
+<p class="status muted">버전 0.2.0 · 로컬 개발 빌드. 공개 다운로드는 아직 제공하지 않습니다. 편집 앱 연동, 기준 데이터 재배포 권한, 서명과 공증을 검증 중입니다.</p>
+<section id="workflow">
+<h2>작업 순서</h2>
+<ol><li><strong>사진 준비</strong><p>피사체와 같은 조명에서 차트를 촬영하세요. 사진 편집 앱에서 화이트밸런스와 노출을 맞춘 뒤 ICC 프로파일이 포함된 TIFF, JPEG 또는 PNG로 내보내세요. RAW는 먼저 현상해야 합니다.</p>
+</li>
+<li><strong>차트 선택과 정렬</strong><p>차트 모델과 버전에 맞는 기준 데이터를 선택하세요. 번호가 있는 네 모서리를 패치 영역에 맞추고, 툴바에서 회전·반전·자동 정렬을 사용하세요. 내보내기 전에 패치 비교와 주의 사항을 확인하세요.</p>
+</li>
+<li><strong>보정 모델 선택</strong><p>Adobe 프리셋에는 HSL, ICC와 cube LUT에는 선형 RGB 행렬을 사용합니다. 표시되는 ΔE76은 모델을 계산한 차트의 오차입니다. 다른 편집 앱의 출력 정확도를 보장하는 값은 아닙니다.</p>
+</li>
+<li><strong>전송과 내보내기</strong><p>Lightroom Classic에서는 플러그인 설정을 누르고 파일 → 플러그인 관리자에 OctoCheckr.lrplugin을 등록하세요. Lightroom을 켜 둔 상태로 값이 갱신됩니다. 사진에 적용할 때는 플러그인 추가 기능을 사용하세요. 적용 전에 스냅샷이 생성됩니다.</p>
+</li>
+</ol>
+</section>
+<section id="compatibility">
+<h2>호환성과 검증 상태</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="호환성과 검증 상태"><table><thead><tr><th scope="col">대상</th><th scope="col">출력과 사용 조건</th><th scope="col">검증 상태</th></tr>
+</thead>
+<tbody><tr><th scope="row">Lightroom Classic</th><td>함께 제공되는 플러그인으로 HSL 값 갱신. 사진 적용은 사용자가 실행합니다.</td><td>통신 규칙과 SDK 모의 테스트 통과. 실제 세션 검증은 남아 있습니다.</td></tr>
+<tr><th scope="row">Adobe Lightroom / Camera Raw</th><td>XMP HSL 프리셋. 노출과 화이트밸런스를 변경하지 않습니다.</td><td>XMP 구조 테스트 통과. 실제 가져오기와 출력 비교는 남아 있습니다.</td></tr>
+<tr><th scope="row">Capture One</th><td>실험 단계의 RGB 카메라 입력 ICC. 일치하는 기존 카메라 프로파일과 Linear Response로 준비한 TIFF가 필요합니다.</td><td>ColorSync와 합성 LittleCMS 검증 통과. RAW 적용은 미검증이며 프로파일 설치 후 재시작이 필요할 수 있습니다.</td></tr>
+<tr><th scope="row">Affinity Photo / DaVinci Resolve</th><td>현상된 sRGB 사진용 33³ cube LUT. 적용 전에 입력 색 공간을 맞춰야 합니다.</td><td>제조사 문서에서 cube 지원 확인. OctoCheckr 파일의 실제 가져오기와 결과는 미검증입니다.</td></tr>
+<tr><th scope="row">그 외 매체</th><td>DNG/DCP, 로그 색 공간용 LUT, RAW 직접 분석은 구현되지 않았습니다.</td><td>호환성을 보장하지 않습니다.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>카메라 ICC 입력 조건</h3>
+<p>ICC 내보내기는 실제 원본 형식, 16비트 색 샘플 깊이와 포함된 ICC 태그를 확인하며 회전·반전 후에도 이 정보를 유지합니다. 카메라 모델, Linear Response 곡선과 이전 편집 설정은 이 검사로 확인할 수 없으므로 직접 확인해야 합니다. 선택한 기준 프로파일은 16 MiB 제한으로 한 번 읽고 내보내기가 끝날 때까지 같은 데이터를 사용합니다.</p>
+<h3>Lightroom 카탈로그 접근</h3>
+<p>Lightroom이 15초 안에 카탈로그 쓰기 권한을 얻지 못하면 보정이 적용되지 않았다고 안내합니다. 다른 작업이 끝난 뒤 최신 보정 적용을 다시 실행하세요. SDK가 실행 완료를 확인한 경우에만 성공을 표시합니다.</p>
+</section>
+<section id="charts">
+<h2>차트 기준 데이터</h2>
+<p>로컬 연구 빌드에는 SpyderCheckr24와 ColorChecker Classic24·Digital SG140의 2014년11월 이전·이후 기준 데이터가 있습니다. 제조사 데이터의 공개 재배포 권한은 아직 확인되지 않았습니다. 사용자 차트는 Lab D50 또는 sRGB JSON 값으로 직사각형 6–576개 패치를 지원합니다. 광원·관찰자·차트 버전·패치 순서를 맞추고, 가능하면 실제 카드의 개별 측정값을 사용하세요.</p>
+<p>CGATS Lab 파일(.txt, .ti3, .cie)도 가져올 수 있습니다. D50/2° 측정 조건, 차트 크기와 A1 좌표 또는 행 우선 파일 순서를 확인하세요. 다른 측정 조건이 명시된 데이터는 거부합니다. 무채색 패치가 두 개 이상 필요합니다(Lab 채도 8 이하, 명도 차이 10 이상).</p>
+<p>JSON의 중성 패치 인덱스는 서로 다른 값이 두 개 이상이어야 하며, 흰색·검정 기준 인덱스를 모두 포함해야 합니다.</p>
+</section>
+<section id="settings">
+<h2>설정과 시작 안내</h2>
+<p>⌘,로 설정을 여세요. 시스템·라이트·다크 외관, 한국어·영어, 파일 변경 감지, Lightroom 보정 값 갱신, 기본 내보내기 대상을 선택할 수 있습니다. 설정에서 기준 데이터 폴더도 열 수 있습니다. 시작 안내는 건너뛰거나 도움말 → 시작 안내에서 다시 볼 수 있습니다.</p>
+<p>회전과 반전은 메모리에서 처리하며 원본 사진을 덮어쓰지 않습니다. 외부 파일 변경을 감지하면 사진을 다시 읽고 메모리 편집을 초기화합니다. 같은 차트 ID를 가져오면 검증된 기준 데이터를 갱신하며, 잘못된 파일을 가져오면 기존 버전을 보존합니다.</p>
+<p>파일 변경을 감지하면 이전 보정을 즉시 무효화하고, 파일이 안정된 뒤 다시 읽습니다. 크기와 수정 시간이 같아도 파일 자체가 교체됐는지 확인합니다. 저장하기 전에 원본 상태와 보정 버전을 다시 검사합니다.</p>
+<h3>파일 감지를 끌 때</h3>
+<p>변경을 이미 감지한 뒤 파일 감지를 끄면, 대기 중인 다시 읽기를 마친 다음 추가 자동 감지를 중단합니다. 파일이 사라졌다면 사진을 다시 열어 사용할 원본을 선택하세요.</p>
+</section>
+<section id="versions">
+<h2>빌드와 버전</h2>
+<p>Swift6 도구 체인이 있는 Xcode가 필요하며 최소 대상은 macOS13입니다. 현재 로컬 빌드는 유니버설 arm64/x86_64·임시 서명입니다. 로컬 ZIP은 압축 해제 후 서명과 SHA-256 체크섬을 검증했습니다. Developer ID 서명·공증은 준비 중입니다. 원본 코드는 MIT 라이선스를 사용하며 제조사 데이터와 샘플 사진은 이 라이선스에 포함되지 않습니다.</p>
+<pre><code>sh Scripts/build.sh
+swift test
+sh Scripts/package-local.sh
+python3 Scripts/audit-publication.py</code></pre><p>배포 검사는 두 실행 파일의 최소 macOS 버전을 확인합니다. 편집 앱 검증, 데이터 배포 권한, GitHub 공개, 서명된 배포는 아직 준비 중입니다.</p><p>0.2.0에는 설정·시작 안내·한국어/영어 UI·네이티브 검사기 폼·기준 데이터 저장 개선이 추가되었습니다. 0.1.0에는 차트 측정·정렬 편집·HSL/행렬 모델·내보내기를 구현했습니다. 구현 상태와 배포 준비 상태는 별도로 기록합니다.</p>
+</section>
+<h2>연구 자료</h2>
+<ul><li><a href="https://developer.apple.com/videos/play/wwdc2025/310/">Apple AppKit design</a></li>
+<li><a href="https://helpx.adobe.com/lightroom/desktop/kb/faq-install-presets-profiles.html">Adobe preset import</a></li>
+<li><a href="https://support.captureone.com/hc/en-us/articles/360002409057-How-do-I-install-and-import-my-own-color-profiles">Capture One custom ICC</a></li>
+<li><a href="https://affinity.help/photo2/en-US.lproj/pages/Adjustments/adjustment_3dLut.html">Affinity Photo LUT adjustment</a></li>
+<li><a href="https://documents.blackmagicdesign.com/UserManuals/BlackmagicVideoAssistManual.pdf">Blackmagic cube LUT workflow</a></li>
+<li><a href="https://babelcolor.com/colorchecker-2.htm">BabelColor chart revisions</a></li>
+<li><a href="https://www.argyllcms.com/doc/ti3_format.html">ArgyllCMS CGATS Lab format</a></li>
+</ul>
+</main>
+<footer>
+OctoCheckr · 0.2.0 사용 안내 · <span class="language-pair">English / 한국어</span></footer>
+</body></html>
