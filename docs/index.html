@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OctoCheckr User Guide</title><meta name="description" content="A native macOS utility for measuring photographed color charts and exporting correction values."><link rel="stylesheet" href="style.css"></head><body><a class="skip" href="#main">Skip to content</a><header>
+<div><strong>OctoCheckr</strong><nav aria-label="Sections"><a href="#workflow">Workflow</a><a href="#compatibility">Compatibility</a><a href="#charts">Chart data</a><a href="#settings">Settings</a><a href="#versions">Build &amp; versions</a><a href="ko/index.html" hreflang="ko">한국어</a></nav>
+</div>
+</header>
+<main id="main">
+<h1>OctoCheckr User Guide</h1>
+<p>A native macOS utility for measuring photographed color charts and exporting correction values.</p>
+<p class="status muted">Version 0.2.0 · Local pre-release. Public downloads are not available yet. Editor integration, reference-data redistribution, signing and notarization remain under verification.</p>
+<section id="workflow">
+<h2>Workflow</h2>
+<ol><li><strong>Prepare the photo</strong><p>Photograph your chart in the same lighting as the subject. Adjust white balance and exposure in your photo editor, then export an ICC-tagged TIFF, JPEG or PNG. Develop RAW files before opening them here.</p>
+</li>
+<li><strong>Select and align</strong><p>Choose the matching chart model and revision. Drag the numbered corners around the patch area. Rotate, flip or automatically align with the toolbar. Inspect patch comparisons and warnings before exporting.</p>
+</li>
+<li><strong>Choose a correction</strong><p>Use HSL for Adobe presets or the linear RGB matrix for ICC and cube LUT exports. The displayed ΔE76 is error on the chart used for fitting, not a guarantee of accuracy in another editor.</p>
+</li>
+<li><strong>Send or export</strong><p>For Lightroom Classic, use Set Up Plug-in, then register OctoCheckr.lrplugin in File → Plug-in Manager. Correction values refresh while Lightroom stays open. Apply them explicitly from Plug-in Extras; the plug-in creates a snapshot before applying HSL settings.</p>
+</li>
+</ol>
+</section>
+<section id="compatibility">
+<h2>Compatibility and evidence</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Compatibility and evidence"><table><thead><tr><th scope="col">Destination</th><th scope="col">Output and constraints</th><th scope="col">Validation</th></tr>
+</thead>
+<tbody><tr><th scope="row">Lightroom Classic</th><td>Live HSL values through the bundled plug-in; explicit photo application.</td><td>Protocol and SDK mocks tested. Real session still pending.</td></tr>
+<tr><th scope="row">Adobe Lightroom / Camera Raw</th><td>XMP HSL preset. Does not change exposure or white balance.</td><td>XMP structure tested. Real import/output comparison pending.</td></tr>
+<tr><th scope="row">Capture One</th><td>Experimental RGB camera input ICC. Requires a TIFF developed with a matching existing camera profile and Linear Response.</td><td>ColorSync and synthetic LittleCMS checks pass. RAW use unverified; installing profiles may require restart.</td></tr>
+<tr><th scope="row">Affinity Photo / DaVinci Resolve</th><td>33³ cube LUT for rendered, encoded sRGB input. Convert to the expected color space before applying.</td><td>Vendors document cube support. OctoCheckr editor import and color-result verification pending.</td></tr>
+<tr><th scope="row">Other media</th><td>DNG/DCP, log-space LUTs and direct RAW analysis are not implemented.</td><td>No compatibility claim.</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Camera ICC input conditions</h3>
+<p>ICC export checks the decoded source type, 16-bit sample depth and embedded ICC tag, including after rotation or flips. This does not establish the camera model, Linear Response curve or prior editing settings; confirm those conditions yourself. The selected base profile is read once with a 16 MiB limit and retained throughout export.</p>
+<h3>Lightroom catalog access</h3>
+<p>If Lightroom cannot obtain catalog write access within 15 seconds, OctoCheckr reports that the correction was not applied. Wait for the other operation to finish and run Apply Latest Correction again. Success is reported only after the SDK confirms execution.</p>
+</section>
+<section id="charts">
+<h2>Chart reference data</h2>
+<p>The local research build includes SpyderCheckr24 and ColorChecker Classic24 / Digital SG140 reference editions before and after November2014. Manufacturer data rights have not been cleared for public redistribution. Custom rectangular charts support 6–576 patches using Lab D50 or encoded sRGB JSON values. JSON references require at least two distinct neutral indices and must include the white and black indices in that list. Use the correct illuminant, observer, chart revision and patch order; individual-card measurements are preferable when available.</p>
+<p>CGATS Lab files (.txt, .ti3, .cie) can be imported with D50/2° confirmation, chart dimensions, and A1 coordinate or row-major file order. Known conflicting measurement metadata is rejected. At least two neutral patches are required (Lab chroma ≤8, lightness span ≥10).</p>
+</section>
+<section id="settings">
+<h2>Settings and onboarding</h2>
+<p>Open Settings with ⌘,. Choose system/light/dark appearance, English/Korean language, file watching, automatic Lightroom value refresh and a default export destination. Settings can open the chart reference folder. The first-run guide is skippable and can be replayed from Help → Getting Started.</p>
+<p>Image rotations and flips are in memory. The original photograph is not overwritten. File watching reloads external file changes and clears in-memory edits. A reimported chart ID replaces its validated stored reference; a malformed import preserves the previous version.</p>
+<p>Watched changes immediately invalidate correction. Stable file observations trigger reload, and file identity detects atomic replacements even when size and time match. Export checks source freshness and correction version before writing.</p>
+<h3>Turning off file watching</h3>
+<p>If you turn off file watching after an update has already been detected, OctoCheckr finishes that pending reload before stopping further automatic detection. If the file is missing, reopen a photo to select a usable source.</p>
+</section>
+<section id="versions">
+<h2>Build and versions</h2>
+<p>Requires Xcode with a Swift6 toolchain; the deployment target is macOS13. The current local build is universal (arm64 and x86_64) and ad hoc signed. Local ZIP extraction, signature and SHA-256 checks pass. Developer ID signing and notarization are pending. Original code is MIT licensed; manufacturer data and sample photos are excluded from that license.</p>
+<pre><code>sh Scripts/build.sh
+swift test
+sh Scripts/package-local.sh
+python3 Scripts/audit-publication.py</code></pre><p>Packaging checks both executable slices against the advertised minimum macOS version. Editor validation, data redistribution clearance, GitHub publication and signed distribution remain pending.</p><p>0.2.0 adds settings, onboarding, English/Korean UI, native inspector forms and durable reference imports. 0.1.0 introduced chart measurement, geometry editing, HSL/matrix fitting and export. Release status is documented separately from implementation status.</p>
+</section>
+<h2>Research sources</h2>
+<ul><li><a href="https://developer.apple.com/videos/play/wwdc2025/310/">Apple AppKit design</a></li>
+<li><a href="https://helpx.adobe.com/lightroom/desktop/kb/faq-install-presets-profiles.html">Adobe preset import</a></li>
+<li><a href="https://support.captureone.com/hc/en-us/articles/360002409057-How-do-I-install-and-import-my-own-color-profiles">Capture One custom ICC</a></li>
+<li><a href="https://affinity.help/photo2/en-US.lproj/pages/Adjustments/adjustment_3dLut.html">Affinity Photo LUT adjustment</a></li>
+<li><a href="https://documents.blackmagicdesign.com/UserManuals/BlackmagicVideoAssistManual.pdf">Blackmagic cube LUT workflow</a></li>
+<li><a href="https://babelcolor.com/colorchecker-2.htm">BabelColor chart revisions</a></li>
+<li><a href="https://www.argyllcms.com/doc/ti3_format.html">ArgyllCMS CGATS Lab format</a></li>
+</ul>
+</main>
+<footer>
+OctoCheckr · Documentation for 0.2.0 · <span class="language-pair">English / 한국어</span></footer>
+</body></html>
